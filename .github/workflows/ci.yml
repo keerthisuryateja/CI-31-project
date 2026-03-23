@@ -8,11 +8,15 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
 
       - name: Checkout Code
         uses: actions/checkout@v5
+        with:
+          persist-credentials: false
 
       - name: Show repository structure
         run: |
@@ -22,11 +26,15 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v5
         with:
-          node-version: 18
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            server/package-lock.json
+            client/package-lock.json
 
       - name: Install Backend Dependencies
         working-directory: server
-        run: npm install
+        run: npm ci
 
       - name: Run Backend Tests
         working-directory: server
@@ -34,7 +42,7 @@ jobs:
 
       - name: Install Frontend Dependencies
         working-directory: client
-        run: npm install
+        run: npm ci
 
       - name: Build React App
         working-directory: client
